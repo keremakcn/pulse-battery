@@ -1,0 +1,10 @@
+*.exe
+*.zip
+*-result.txt
+probe.txt
+profile*.xml
+battery*.xml
+battery*.html
+history-test.xml*
+learning-test-work/
+*.tmp
