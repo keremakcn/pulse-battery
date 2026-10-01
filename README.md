@@ -1,109 +1,83 @@
-# Pulse 1.0.0 · Öğrenen pil widget’ı
+# Pulse 1.0.0
 
-[English documentation](README.en.md)
+[Türkçe](README.md)
 
-Windows 10/11 laptoplar için küçük, Türkçe/İngilizce pil widget’ı. Pulse.exe dosyasına çift tıklayın; kurulum veya internet bağlantısı gerekmez. .NET Framework 4.8 hedeflenir.
+A compact battery widget for Windows 10/11 laptops, targeting .NET Framework 4.8. No installer, internet connection, additional packages or AI model required.
 
-![Pulse görünümü — örnek veriler](preview.png)
+![Pulse with sample data](preview-en.png)
 
-## İndirme ve güncelleme
+## Start and update
 
-GitHub Releases bölümündeki `Pulse-v1.0.0-Windows.zip` paketini indirin, dosyaları çıkarın ve `Pulse.exe` dosyasını açın. Önceki kopyanız varsa Pulse’u sistem tepsisinden kapatıp eski EXE’yi yeni dosyayla değiştirin. Masaüstüne kopyalanmış dosyalar otomatik güncellenmez. Öğrenilmiş profil uygulama klasöründen ayrı tutulduğu için korunur. Önceki filtreyle analiz yaptıysanız “Pil geçmişini yeniden analiz et” düğmesini kullanın.
+Extract `Pulse-v1.0.0-Windows.zip` and launch `Pulse.exe`. To update, exit the old copy from its tray menu and replace the executable. Desktop copies do not update automatically. Your learning profile is stored separately and is preserved. After a history-filter update, click **Reanalyze battery history**.
 
-Bu sürüm kod imzalı değildir; Windows bilinmeyen yayıncı uyarısı gösterebilir. Ayrıntılı sürüm notları: [CHANGELOG.md](CHANGELOG.md).
+This release is unsigned; Windows may show an unknown-publisher warning. Cross-device field testing has not yet been completed.
 
-## Dil
+## Language
 
-Uygulama açılışta Windows kullanıcısının görüntüleme dilini algılar. Türkçe için Türkçe, İngilizce ve diğer diller için İngilizce kullanılır. Arayüz, tepsi menüsü, ipuçları, hata/durum mesajları, süre birimleri ve sayı biçimleri birlikte değişir. Çevrimiçi hizmet kullanılmaz. Windows dili değiştirildiğinde Pulse’u kapatıp açın. Gerekirse `Pulse.exe --lang=tr` veya `Pulse.exe --lang=en` ile dil elle seçilebilir.
+Pulse detects the current Windows user's display language at startup. Turkish selects Turkish; English and other languages select English. Labels, menus, tooltips, status/error messages, time units and number formatting follow the selected language. Restart Pulse after changing the Windows display language. Optional overrides: `Pulse.exe --lang=tr` or `Pulse.exe --lang=en`.
 
-`Pulse.exe --language-test` otomatik dil seçimini, desteklenmeyen dilde İngilizceye dönüşü ve sayı/birim biçimlerini sınar. `--preview` seçili dile göre `preview-tr.png` veya `preview-en.png` üretir.
+## Controls and readings
 
-## Kullanım
+- Drag the pulse title to move the window.
+- ◇ / ◆ toggles always-on-top.
+- − minimizes to the system tray; double-click the tray icon to restore.
+- × or **Exit** closes the application.
+- **Reset learning history** in the tray menu clears the local profile.
+- Only one instance per Windows user/session is allowed.
 
-- Pulse yazısından tutup sürükleyin.
-- ◇ / ◆: her zaman üstte tutmayı açar veya kapatır.
-- −: sistem tepsisine küçültür; simgeye çift tıklayarak geri getirin.
-- × veya tepsi menüsündeki Kapat: uygulamayı kapatır.
-- Tepsi menüsündeki “Öğrenme geçmişini sıfırla”: cihazda öğrenilen profili temizler.
-- Aynı Windows kullanıcısı ve oturumunda ikinci bir kopya açılmaz.
+Displays battery percentage, instantaneous discharge/charge power, a recent graph, approximate time remaining, current/full capacity, voltage and battery health when provided by the hardware.
 
-## Kişiye ve cihaza özel öğrenme
+## Live estimates and learning
 
-### Uyku ve ekran kapalı kullanım
+### Screen-off and sleep isolation
 
-Uyku veya ekran kapalıyken gelen ölçümler genel tüketim, canlı süre ortalaması, şarj eğrisi ve aktif grafik geçmişine eklenmez. Bu koruma her zaman açıktır. Uyku/uyanma ve oturum ekran durumu Windows bildirimleriyle izlenir. Ekran kapalı indirme gibi aktif işler de tedbiren dışarıda tutulur; bu alan kesin bir Modern Standby teşhisi değildir. Bildirimler alınamazsa canlı öğrenme duraklatılır ve durum belirtilir.
+Screen-off and suspend readings never train typical-use power, live smoothing, charging bands or the active graph. This protection is always enabled. Pulse subscribes to Windows session-display and suspend/resume notifications. Screen-off downloads are conservatively excluded too; screen-off is not presented as a definitive Modern Standby diagnosis. If notifications cannot be registered, live learning pauses with a status message.
 
-Tepsi menüsündeki **Bekleme kaybını göster** seçeneği varsayılan olarak açıktır ve cihazdaki profile kaydedilir. Windows çalışmaya izin verirse beklemede en sık 60 saniyede bir ölçüm alınır; uygulama duraklatılırsa ölçüm zorlanmaz. Cihazı uyanık tutma veya uyandırma isteği gönderilmez. Geçiş sırasında başlamış eski ölçümler atılır; uyanışın ilk yeni okuması sınır ölçümüdür, ardından aktif öğrenme yeni örneklerle başlar.
+The tray option **Show standby battery loss** defaults to on and is saved locally. When Windows allows the process to run, standby readings occur no more often than once per minute. Pulse does not request wake timers or prevent sleep. In-flight readings across state transitions are discarded; the first fresh wake reading is a boundary observation and active learning then starts fresh.
 
-Uygun başlangıç ve bitiş okumaları varsa son beklemenin yaklaşık **net kapasite kaybı (Wh)** ve süresi gösterilir; genel kullanım hesabına aktarılmaz. Bu sonuç yalnızca mevcut uygulama oturumunda tutulur. Başlangıç ölçümü eskiyse, pil değişirse, kapasite verisi eksikse veya şarj/priz kullanımı gözlenirse kayıp gösterilmez. Uygulama duraklatılmışken gözlenemeyen kısa şarjlar tespit edilemeyebilir; bu nedenle sonuç toplam tüketim değil yaklaşık net farktır. Seçeneği kapatmak bekleme takibini kapatır; uyku ölçümlerini öğrenmeden dışlama korumasını kapatmaz.
+If valid boundary readings exist, the latest period shows approximate **net capacity loss in Wh** and duration, separate from learning. It lasts only for the current app session. Stale/missing starting data, battery changes or observed AC/charging suppress the result. Brief charging while the process is suspended may go unobserved: this is net change, not total energy consumed. Turning off the option disables standby tracking, never the learning exclusion.
 
-`--standby-test` 19 senaryoyla ölçümlerin ayrılmasını sınar. `--powerwatch-test` bilgisayarı uyutmadan Windows bildirimlerine kaydı doğrular. Gerçek kapak kapatma/Modern Standby döngüsü bu sürümde fiziksel olarak test edilmemiştir.
+`--standby-test` covers 19 isolation scenarios. `--powerwatch-test` checks native notification registration without sleeping the computer. A physical lid-close/Modern Standby cycle has not been exercised by the automated checks.
 
-Hazır bir kullanıcı profili içermez. İlk açılıştaki “Pil geçmişimi analiz et” düğmesiyle Windows pil geçmişini başlangıç profiline dönüştürebilir. Analiz yapılmazsa veya yeterli kayıt yoksa uygulama açıkken veri toplar. Geçmiş kullanılmıyorsa ilk yaklaşık 30 saniye canlı tahmin için, en az 20 dakikalık geçerli pil kullanımı da genel kullanım profili için gereklidir. Bunlar doğruluk garantisi değildir; farklı kullanım günleriyle profil daha temsil edici olur.
+Readings arrive every 5 seconds. A seven-reading median and smoothing suppress short spikes while adapting to sustained load after roughly 20 seconds. Sleep gaps, invalid readings and charge/discharge changes restart the live window. Saved learning is retained.
 
-Ölçümler 5 saniyede bir alınır. Ağ bağlantısı, bulut, yapay zekâ modeli veya ek servis kullanılmaz. Her Windows kullanıcısının profili kendi LocalAppData/Pulse/profile-v1.xml dosyasında tutulur. Programın dağıtım paketi kullanıcı geçmişi içermez. Bataryanın Windows aygıt kimliği değişirse profil sıfırlanır. Aynı kimlikle yapılan fiziksel pil değişimi otomatik olarak ayırt edilemeyebilir; menüden geçmişi sıfırlayın.
+Without imported history, live estimates need about 30 seconds and the typical-use profile needs at least 20 valid one-minute summaries. These are minimum data requirements, not accuracy guarantees. Typical full-battery runtime is inferred from full capacity and typical power; it is not an average of complete discharge runs.
 
-### Windows geçmişiyle başlangıç analizi
+The displayed range is a heuristic allowance, not a statistically calibrated confidence interval: normally ±10%, ±25% for variable usage or initial history estimates, and ±20% for an incompletely learned charge curve. Bounds are rounded outward to five minutes. The graph and “avg.” use raw readings, so their average need not match the smoothed estimate exactly.
 
-“Pil geçmişimi analiz et” düğmesi arka planda powercfg /batteryreport /xml /duration 14 çalıştırır. Bu bir yük testi değildir; pil zorlanmaz. Komut yalnızca düğmeye basıldığında çalışır, her açılışta veya 5 saniyelik döngüde tekrarlanmaz. Rapor en fazla 30 saniye beklenir, geçici XML yerel olarak işlenir ve ardından silinir. Profilde yalnızca özet güç, toplam süre, kayıt/gün sayıları ve analiz zamanı kalır. Raporun kendisi dağıtım paketine eklenmez.
+Charging is learned in ten 10-percentage-point bands, requiring three minutes of observations per band. Remaining band durations are summed; unobserved bands use current power and remain marked as learning. Current power scales the historical curve to adapt to load/charger changes. Chargers are not stored separately. Firmware charge limits such as 80% are not detected. The target is reported full capacity, and stopped charging shows no charge ETA.
 
-RecentUsage içindeki Active ve Ac=0 kayıtları kullanılır. 5 dakikadan kısa / 12 saatten uzun, eski, sıfır/negatif tüketimli, çelişkili kapasite içeren, yinelenen veya örtüşen kayıtlar dışarıda tutulur. Süre 100 nanosaniyelik Windows biriminden saate, tüketim mWh’den Wh’ye çevrilir. Uyku ve prizde kullanım analize katılmaz. Windows’un pil değişti işaretinden önceki kayıtlar kullanılmaz.
+## Analyze battery history
 
-Aykırı tüketimi belirlerken her oturum eşit oy kullanır: oturum medyanı ve medyan mutlak sapma hesaplanır. Böylece tek uzun, yüksek tüketimli oturum normal kullanım eşiğini belirleyemez. Sapma eşiği medyanın %60’ı ile mutlak sapmanın üç katından büyük olanıdır; ancak medyanın kendisini aşamaz. Tipik tüketimin iki katından yüksek oturumlar genel profile katılmaz. Filtrelenmiş oturumlardan ortalama alınırken süre ağırlığı en fazla 60 dakikadır. Elektrik kesintisi/oyun tespit edilmez; kullanıcıya göre sıra dışı tüketim ayrılır. Düzenli yüksek tüketim kullanıcının normaliyse otomatik olarak silinmez. En az 3 uygun oturum, toplam 60 dakika ve 2 farklı UTC gün gerekir. Yetersiz ya da okunamayan raporda canlı öğrenme devam eder. “Aykırı” sayısı yalnızca tüketim filtresinde ayrılan oturumları gösterir; uyku, prizde kullanım ve diğer geçersiz kayıtlar bu sayıya dahil değildir.
+**Analyze my battery history** creates a fresh Windows XML battery report for the last 14 days, in the background. It reads existing Windows records; it is not a battery stress test. The command runs only when requested, with a 30-second timeout. The temporary report is deleted after analysis; only summary statistics are saved.
 
-Geçmiş, ilk canlı ölçümler gelene kadar geniş bir süre aralığıyla ve “Windows geçmişine göre” etiketiyle kullanılır. Canlı öğrenme ilerledikçe genel kullanım hesabında tarihsel özete 30 dakikalık sabit ağırlık, canlı dakikalara kendi sayıları kadar ağırlık verilir. Aynı raporu yeniden analiz etmek örnekleri çoğaltmaz, özeti günceller. 30 günden eski analiz kullanılmaz. Sürekli yüksek yükte canlı kalan süre geçmişteki iyimser değere bağlı kalmaz.
+Only active, battery-powered sessions are used. Sleep/AC entries, sessions shorter than five minutes or longer than 12 hours, stale or inconsistent data, duplicate/overlapping rows and nonpositive drains are excluded. Windows-marked battery replacement cuts off older history.
 
-Windows raporu cihazın geçmişidir; aynı cihazdaki başka Windows oturumlarının pil kullanımını da içerebilir. Profil dosyası Windows kullanıcısına özeldir. Rapor geçmiş adaptör performansını veya ayrıntılı şarj eğrisini güvenilir biçimde ayırmadığından, şarj eğrisi yalnızca canlı ölçümlerden öğrenilir. Geçmişle başlamak doğruluk garantisi değildir; tahmin başarısı gerçek kullanımda ölçülmelidir.
+Outlier detection gives each session an equal vote, so one long gaming session during an outage cannot define normal use. The threshold uses the median and median absolute deviation, and never accepts a deviation greater than the median. Sessions above twice typical power are therefore excluded from the general profile. Retained-session averages use duration weights capped at 60 minutes. This detects unusual consumption, not games or electricity outages. Consistently high use can legitimately become the user's normal profile.
 
-### Canlı kalan süre
+At least three retained sessions, 60 minutes and two UTC dates are required. Otherwise, live learning continues. Importing again replaces the summary rather than duplicating readings. The summary seeds the initial runtime, then live measurements take over. For typical-use estimates, imported history has a weight equivalent to 30 live minutes; its influence declines as live data grows. Imports older than 30 days expire.
 
-Son 7 ölçümün medyanı, yumuşatılmış bir ortalamayı besler. Kısa sıçramalar bastırılır; yüksek tüketim yaklaşık 20 saniye devam ederse tahmin yeni yüke uyum sağlamaya başlar. Böylece oyun devam ederken kalan süre gereğinden uzun tutulmaz. Şarj/deşarj değişiminde, geçersiz güç verisinde veya 20 saniyeden uzun ölçüm boşluğunda canlı hesap yeniden başlar. Öğrenilmiş genel profil korunur.
+Windows history describes the device and can include other Windows user sessions. It does not supply a sufficiently detailed charging curve for this implementation; charging continues to learn from live readings.
 
-Gösterilen süre aralığı yaklaşık bir kullanım payıdır; istatistiksel olarak kalibre edilmiş güven aralığı değildir. Normalde ±%10, değişken tüketimde ±%25, henüz öğrenilmemiş şarj eğrisinde ±%20 pay uygulanır ve sınırlar 5 dakikaya yuvarlanır. “Kullanım değişken” etiketi son ölçümlerin değişkenliğini belirtir.
+## Local data and resource limits
 
-Grafik ve “ort.” alanı ham ölçümleri gösterir; süre tahmini ayrı olarak yumuşatılır. Bu nedenle ort. W ile süre hesabı birebir aynı olmayabilir.
+The profile is stored at `%LOCALAPPDATA%\Pulse\profile-v1.xml` for each Windows user. It contains at most 720 minute summaries from the last 30 days, 10 charging bands and one history summary. Live smoothing holds 24 readings and the graph holds 60. Data is saved at most every two minutes, plus exit/reset/import. No continuous raw log, application-name collection, upload, startup registration or power-setting change is performed.
 
-### Genel kullanımda pil ömrü
+An unreadable profile starts fresh; failed saves are reported. A changed Windows battery device identity resets the profile. A physical replacement retaining the same identity may require a manual reset. Window position and always-on-top preference do not persist between runs.
 
-Dakikalık medyanlar saklanır. En az 20 örnekten sonra tipik tüketim hesaplanır; genel medyanın etrafındaki aykırı düşük/yüksek dakika değerleri dışarıda tutulur. Eşik medyanın %60’ı ile medyan mutlak sapmanın üç katından büyük olanıdır. Genel kullanım süresi, mevcut tam dolum kapasitesinin bu tipik tüketime bölünmesidir; tamamlanmış pil boşaltma oturumlarının doğrudan ortalaması değildir.
+Missing hardware values display “—”. Relative-capacity drivers have not been validated. Opposing charge/discharge directions across multiple batteries disable power/ETA reporting. Battery health reflects manufacturer-reported full/design capacities.
 
-Elektrik kesintisi veya oyun oynandığı kesin olarak tespit edilmez. Nadir yüksek tüketim ölçümleri istatistiksel olarak ayrılır. Kullanıcının çoğu kullanımı oyun ise bu zamanla normal kullanım profiline dönüşebilir; kişisel genel kullanımı temsil etmesi amaçlanır.
+## Build and checks
 
-Son 30 gün içindeki en fazla 720 dakikalık örnek tutulur. Bu sınır uzun süre açık kullanımda son 12 saatlik geçerli pil ölçümüne karşılık gelir; 30 günlük eksiksiz günlük tutulmaz.
+Run `build.ps1` to compile the included C# and XAML sources using Windows' .NET Framework compiler. `Localization.cs` contains the language dictionary and `AssemblyInfo.cs` the version metadata.
 
-### Şarj süresi
+- `--self-test`: basic time calculations.
+- `--learning-test`: 24 checks covering smoothing, sustained load, charging, persistence and bounded history.
+- `--history-test`: 16 checks including rare gaming/outage drains and insufficient retained data.
+- `--language-test`: Turkish, English and unsupported-language fallback, numbers and units.
+- `--preview --lang=en` / `--preview --lang=tr`: render sample-data previews.
+- `--probe`: write current readings to `probe.txt`.
 
-Doluluk %10’luk 10 bölüme ayrılır; her bölümün dakika medyanlarından şarj gücü öğrenilir. Bölüm başına en az 3 dakika gözlem sonrası o bölümün hızı kullanılır. Kalan bölümlerin süreleri toplanır; böylece sona yaklaşırken gözlenen yavaşlama hesaba katılır. Mevcut güç önceki eğriyi ölçeklendirerek adaptör veya yük değişimine uyum sağlar. Görülmemiş bölümlerde mevcut güç kullanılır ve “Şarj eğrisi öğreniliyor” gösterilir. Eğri 30 gün güncellenmezse eski kabul edilir.
+Behavioral tests passed in both languages; the history generation/analysis path was verified on the development laptop. Synthetic checks do not prove field accuracy or whole-application CPU/RAM consumption. Generated test/probe files and personal battery reports are excluded from the release package.
 
-Farklı adaptörler ayrı profillerde tutulmaz. Üreticinin %80 gibi özel şarj sınırları algılanmaz; hedef donanımın bildirdiği tam dolum kapasitesidir. Şarjın durduğu bildirildiğinde süre gösterilmez. Gerçek doğruluk farklı laptoplarda ve tam şarj döngülerinde ayrıca ölçülmelidir.
-
-## Hafiflik ve gizlilik
-
-Canlı öğrenme penceresi 24 örnek, grafik 60 örnek, kalıcı normal profil 720 dakika ve şarj eğrisi 10 bölümle sınırlıdır. Dosya en sık 2 dakikada bir, ayrıca çıkışta ve sıfırlamada yazılır. Ham, kesintisiz günlük tutulmaz. Dosya bozuksa boş profille başlanır; kayıt başarısızsa ekranda belirtilir ve öğrenme o oturumda devam eder.
-
-Uygulama başlangıca otomatik eklenmez, pil ayarlarını değiştirmez, süreç/adaptör/oyun isimleri toplamaz. Pencere konumu ve üstte tutma tercihi oturumlar arasında saklanmaz.
-
-## Donanım sınırları
-
-Sunulmayan veriler “—” gösterilir. Ayrıntılı ölçümler okunamazsa Windows temel pil durumu kullanılır. Pil sağlığı, tam dolum / tasarım kapasitesidir. Göreli kapasite birimi kullanan sürücüler doğrulanmamıştır. Birden çok pil zıt yönde çalışıyorsa güç ve süre gösterilmez.
-
-## Kaynak ve doğrulama
-
-Pulse.cs, Learning.cs, LearningTests.cs, Widget.xaml ve build.ps1 kaynak dosyalarıdır. build.ps1 Windows’un .NET Framework derleyicisiyle derler; harici paket gerektirmez.
-
-- `Pulse.exe --self-test`: temel süre hesapları.
-- `Pulse.exe --learning-test`: sıçrama, sürekli yük, uyku, geçersiz veri, aykırı genel kullanım, şarj yavaşlaması, adaptör/yük değişimi, profil kaydetme/yükleme, bozuk dosya, farklı aygıt, sıfırlama ve bellek sınırları.
-- `Pulse.exe --history-test`: geçmiş filtresi, süre/enerji birimleri, ilk tahmin, kalıcılık, tekrar analiz, pil değişimi ve güvenli XML okuma testleri.
-- `Pulse.exe --probe`: gerçek pil verisini probe.txt dosyasına yazar.
-- `Pulse.exe --preview`: örnek verilerle preview.png üretir; bu görsel gerçek ölçüm değildir.
-
-Testler sentetik senaryolardır; farklı donanımlarda saha doğruluğunun veya tüm uygulamanın CPU/RAM tüketiminin garantisi değildir. Öğrenme testindeki hız ölçümü yalnızca hesaplama döngüsüne aittir.
-
-Windows kaynakları: root/wmi BatteryStatus, BatteryFullChargedCapacity, BatteryStaticData ve GetSystemPowerStatus.
-
-- https://learn.microsoft.com/en-us/windows/win32/api/batclass/ns-batclass-battery_wmi_status
-- https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-battery
-
-- https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options#batteryreport
-
-
+Windows references: [Battery report command](https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options#batteryreport), [battery status](https://learn.microsoft.com/en-us/windows/win32/api/batclass/ns-batclass-battery_wmi_status).
