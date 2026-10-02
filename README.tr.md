@@ -1,109 +1,80 @@
-# Pulse 1.0.0 · Öğrenen pil widget’ı
+<p align="center"><img src="assets/pulse-logo.png" alt="Pulse" width="180"></p>
 
-[English documentation](README.en.md)
+# Pulse 1.1.0-beta.1
 
-Windows 10/11 laptoplar için küçük, Türkçe/İngilizce pil widget’ı. Pulse.exe dosyasına çift tıklayın; kurulum veya internet bağlantısı gerekmez. .NET Framework 4.8 hedeflenir.
+[English](README.md)
 
-![Pulse görünümü — örnek veriler](preview.png)
+Windows 10/11 laptoplar için C# ve WPF ile yazılmış küçük bir pil widget’ı. .NET Framework 4.8 kullanır; kurulum, internet, NuGet paketi veya yapay zekâ modeli gerektirmez.
 
-## İndirme ve güncelleme
+![Örnek verilerle Pulse](preview-tr.png)
 
-GitHub Releases bölümündeki `Pulse-v1.0.0-Windows.zip` paketini indirin, dosyaları çıkarın ve `Pulse.exe` dosyasını açın. Önceki kopyanız varsa Pulse’u sistem tepsisinden kapatıp eski EXE’yi yeni dosyayla değiştirin. Masaüstüne kopyalanmış dosyalar otomatik güncellenmez. Öğrenilmiş profil uygulama klasöründen ayrı tutulduğu için korunur. Önceki filtreyle analiz yaptıysanız “Pil geçmişini yeniden analiz et” düğmesini kullanın.
+## Başlatma ve güncelleme
 
-Bu sürüm kod imzalı değildir; Windows bilinmeyen yayıncı uyarısı gösterebilir. Ayrıntılı sürüm notları: [CHANGELOG.md](CHANGELOG.md).
+Eski Pulse’u tepsi menüsünden kapatın, Windows ZIP’ini açın ve `Pulse.exe` dosyasını çalıştırın. Yeni bir kopya, başka klasördeki veya açık olan kopyayı kendiliğinden güncellemez. Beta imzasızdır; Windows bilinmeyen yayıncı uyarısı gösterebilir.
 
-## Dil
+Profil `%LOCALAPPDATA%\Pulse\profile-v1.xml` konumunda kalır. Dosya adı korunmuştur, içindeki biçim artık sürüm 2’dir. İlk geçişte `profile-v1.xml.v1.bak` yedeği alınır. Eski uygulama yeni biçimi okuyamaz; geri dönmek için Pulse’u kapatıp bu yedeği elle geri yükleyin. Kişisel profilleri ve pil raporlarını yayın paketine koymayın.
 
-Uygulama açılışta Windows kullanıcısının görüntüleme dilini algılar. Türkçe için Türkçe, İngilizce ve diğer diller için İngilizce kullanılır. Arayüz, tepsi menüsü, ipuçları, hata/durum mesajları, süre birimleri ve sayı biçimleri birlikte değişir. Çevrimiçi hizmet kullanılmaz. Windows dili değiştirildiğinde Pulse’u kapatıp açın. Gerekirse `Pulse.exe --lang=tr` veya `Pulse.exe --lang=en` ile dil elle seçilebilir.
+Yeni Windows pil kimliği eski WMI kimliğinden daha ayrıntılıdır. Kimlik değiştiğinde ayrı bir model başlatılır; eski arşiv korunur. Böylece farklı olabilecek pillerin ölçümleri karışmaz. Windows geçmişini yeniden analiz ederek yeni modeli başlatabilirsiniz.
 
-`Pulse.exe --language-test` otomatik dil seçimini, desteklenmeyen dilde İngilizceye dönüşü ve sayı/birim biçimlerini sınar. `--preview` seçili dile göre `preview-tr.png` veya `preview-en.png` üretir.
+## Görünen bilgiler ve kullanım
 
-## Kullanım
+Yüzde, güncel pil tüketimi/net şarj gücü (son 5 saniyedeki okumaların ortalaması), son beş dakikanın grafiği, yaklaşık kalan süre, mevcut/tam/tasarım kapasitesi, voltaj ve pil sağlığı gösterilir. Bilgilerin bulunması donanıma bağlıdır. Pilin watt değeri prizden çekilen toplam güç değildir. Donanım, Pulse’un sorgulama hızından daha yavaş güncellenebilir.
 
-- Pulse yazısından tutup sürükleyin.
-- ◇ / ◆: her zaman üstte tutmayı açar veya kapatır.
-- −: sistem tepsisine küçültür; simgeye çift tıklayarak geri getirin.
-- × veya tepsi menüsündeki Kapat: uygulamayı kapatır.
-- Tepsi menüsündeki “Öğrenme geçmişini sıfırla”: cihazda öğrenilen profili temizler.
-- Aynı Windows kullanıcısı ve oturumunda ikinci bir kopya açılmaz.
+Windows görüntüleme dili Türkçeyse Türkçe, diğer dillerde İngilizce açılır. Dil değişikliğinden sonra yeniden başlatın. İsteğe bağlı: `--lang=tr` veya `--lang=en`.
 
-## Kişiye ve cihaza özel öğrenme
+Başlıktan veya başlığın üstündeki boş kenardan sürükleyin; ◇/◆ ile üstte tutun, − ile tepsiye küçültün, × ile kapatın. Tepsi simgesine çift tıklayarak geri açın. Tepsi menüsünden bekleme kaybı gösterimini değiştirebilir ve öğrenmeyi sıfırlayabilirsiniz. Sıfırlama mevcut pilin etkin arşivini temizler; eski pillere ait ayrı arşivler ve geçiş yedekleri diskte korunur.
 
-### Uyku ve ekran kapalı kullanım
+## Öğrenme kuralları
 
-Uyku veya ekran kapalıyken gelen ölçümler genel tüketim, canlı süre ortalaması, şarj eğrisi ve aktif grafik geçmişine eklenmez. Bu koruma her zaman açıktır. Uyku/uyanma ve oturum ekran durumu Windows bildirimleriyle izlenir. Ekran kapalı indirme gibi aktif işler de tedbiren dışarıda tutulur; bu alan kesin bir Modern Standby teşhisi değildir. Bildirimler alınamazsa canlı öğrenme duraklatılır ve durum belirtilir.
+- **Genel kullanım:** yalnızca bilgisayar aktifken, prizden çıkarılmış pil tüketiminden öğrenilir. Prize bağlıyken pilin destek vermesi de genel ortalamaya katılmaz.
+- **Gerçek enerji:** watt değerleri geçen süreyle ağırlıklandırılır. Kısa ama gerçek yüksek tüketimler harcanan enerjiden silinmez. Ekrandaki tahmin, ayrı bir 30 saniyelik ortanca ve zamana bağlı yumuşatma ile dengelenir. Sürekli yüksek kullanımda kalan süre yeni duruma uyum sağlar.
+- **İstisnai yük:** temel kullanım öğrenildikten sonra çok yüksek tüketimler ayrı kaydedilir. Tek bir uzun oyun/elektrik kesintisi genel profili değiştiremez. Son yedi yeterince gözlenen günün en az beşinde yüksek kullanım tekrarlanırsa yeni alışkanlık sayılabilir. Pulse oyunun adını veya elektriğin neden kesildiğini bilemez; ilk ölçümlerin tamamı oyunsa ayrı bir normal kullanım henüz bilinemez.
+- **Watt eksikse:** kapasite değişimi, pilin ölçüm hassasiyetini aşacak kadar biriktiğinde 1–5 dakikalık eğilimden yaklaşık güç bulunabilir. Sabit/sıfır değerlerden, ölçüm boşluklarından veya pil göstergesi düzeltmelerinden tüketim uydurulmaz.
+- **Uyku/ekran kapalı:** genel kullanım ve şarj öğrenmesine katılmaz. Ekran kapalı indirmeler de temkinli olarak dışlanır. Sadece ekranın kısılması öğrenmeyi sıfırlamaz. Uyku, güç kaynağı değişimi ve bu sırada devam eden eski okumalar birbirinden ayrılır.
+- **Bekleme kaybı:** istenirse yaklaşık net kapasite kaybı ayrı saklanır. Bilgisayar uyandırılmaz; arka plan servisi kurulmaz. Windows uygulamayı tamamen duraklatabileceğinden uykuda kesintisiz okuma vaat edilmez. Gözlenen bir priz bağlantısı o bekleme kaybı ölçümünü geçersiz kılar.
 
-Tepsi menüsündeki **Bekleme kaybını göster** seçeneği varsayılan olarak açıktır ve cihazdaki profile kaydedilir. Windows çalışmaya izin verirse beklemede en sık 60 saniyede bir ölçüm alınır; uygulama duraklatılırsa ölçüm zorlanmaz. Cihazı uyanık tutma veya uyandırma isteği gönderilmez. Geçiş sırasında başlamış eski ölçümler atılır; uyanışın ilk yeni okuması sınır ölçümüdür, ardından aktif öğrenme yeni örneklerle başlar.
+Genel profil için en az 20 dakika uygun veri veya Windows geçmişi gerekir. Tek bir günün ağırlığı sınırlıdır; yeni günler daha etkilidir. Anlık kalan süre genel profilden ayrı, mevcut kullanımı izler. Eski kayıtlar silinmez; çalışan model son 180 arşiv gününü belleğe alır.
 
-Uygun başlangıç ve bitiş okumaları varsa son beklemenin yaklaşık **net kapasite kaybı (Wh)** ve süresi gösterilir; genel kullanım hesabına aktarılmaz. Bu sonuç yalnızca mevcut uygulama oturumunda tutulur. Başlangıç ölçümü eskiyse, pil değişirse, kapasite verisi eksikse veya şarj/priz kullanımı gözlenirse kayıp gösterilmez. Uygulama duraklatılmışken gözlenemeyen kısa şarjlar tespit edilemeyebilir; bu nedenle sonuç toplam tüketim değil yaklaşık net farktır. Seçeneği kapatmak bekleme takibini kapatır; uyku ölçümlerini öğrenmeden dışlama korumasını kapatmaz.
+## Şarj tahmini, %99 ve şarj sınırları
 
-`--standby-test` 19 senaryoyla ölçümlerin ayrılmasını sınar. `--powerwatch-test` bilgisayarı uyutmadan Windows bildirimlerine kaydı doğrular. Gerçek kapak kapatma/Modern Standby döngüsü bu sürümde fiziksel olarak test edilmemiştir.
+Şarj ölçümleri yalnızca şarj modelini geliştirir. Eğri %5’lik dilimler kullanır. Bir dilimin öğrenilmiş sayılması için en az üç gözlenmiş şarj oturumu ve üç dakika ölçüm gerekir. Aynı oturumdaki çok sayıda dakika, bağımsız şarj döngüleri gibi sayılmaz. Bilgisayarın kullanımı değiştikçe net şarj gücü süreye yansır. Kesintisiz tamamlanan yüzde dilimlerinin gerçek geçiş süresi de ölçülür; üç geçişten sonra kapasite artışı ve geçen süre eğriyi iyileştirir.
 
-Hazır bir kullanıcı profili içermez. İlk açılıştaki “Pil geçmişimi analiz et” düğmesiyle Windows pil geçmişini başlangıç profiline dönüştürebilir. Analiz yapılmazsa veya yeterli kayıt yoksa uygulama açıkken veri toplar. Geçmiş kullanılmıyorsa ilk yaklaşık 30 saniye canlı tahmin için, en az 20 dakikalık geçerli pil kullanımı da genel kullanım profili için gereklidir. Bunlar doğruluk garantisi değildir; farklı kullanım günleriyle profil daha temsil edici olur.
+Şarj durmuşsa kalan dakika yerine **Prize bağlı · şarj edilmiyor** gösterilir. Bildirilen şarj gücü sıfır ve kapasite iki dakika boyunca sabitse şarj öğrenmesi ve geri sayım durur. Bu bekleme, son yüzdeyi doldurmanın çok uzun sürdüğü şeklinde öğrenilmez. Windows %100 bildirip şarjın durduğunu söylüyorsa **Şarj tamamlandı** yazılabilir. Bildirilen %99 değiştirilmez; açıklanamayan bir duraklama kesin %80 sınırı diye etiketlenmez.
 
-Ölçümler 5 saniyede bir alınır. Ağ bağlantısı, bulut, yapay zekâ modeli veya ek servis kullanılmaz. Her Windows kullanıcısının profili kendi LocalAppData/Pulse/profile-v1.xml dosyasında tutulur. Programın dağıtım paketi kullanıcı geçmişi içermez. Bataryanın Windows aygıt kimliği değişirse profil sıfırlanır. Aynı kimlikle yapılan fiziksel pil değişimi otomatik olarak ayırt edilemeyebilir; menüden geçmişi sıfırlayın.
+Üreticilerin şarj sınırları için evrensel bir sorgu eklenmedi. Adaptöre özel eğriler ve gerçek tam şarj döngüleriyle süre kalibrasyonu sonraki geliştirmelerdir. Eğri net watt değerlerinden ve gözlenen tam dilim sürelerinden öğrenir; gelecekteki kullanım değişikliklerini bilemez.
 
-### Windows geçmişiyle başlangıç analizi
+## Windows pil geçmişi
 
-“Pil geçmişimi analiz et” düğmesi arka planda powercfg /batteryreport /xml /duration 14 çalıştırır. Bu bir yük testi değildir; pil zorlanmaz. Komut yalnızca düğmeye basıldığında çalışır, her açılışta veya 5 saniyelik döngüde tekrarlanmaz. Rapor en fazla 30 saniye beklenir, geçici XML yerel olarak işlenir ve ardından silinir. Profilde yalnızca özet güç, toplam süre, kayıt/gün sayıları ve analiz zamanı kalır. Raporun kendisi dağıtım paketine eklenmez.
+**Pil geçmişimi analiz et**, her seferinde yeni bir geçici `powercfg /batteryreport /xml /duration 14` raporu üretir; eski batteryhealth dosyasını kullanmaz. Analizden sonra geçici rapor silinir. İnternete veri gönderilmez, pili zorlayan test yapılmaz.
 
-RecentUsage içindeki Active ve Ac=0 kayıtları kullanılır. 5 dakikadan kısa / 12 saatten uzun, eski, sıfır/negatif tüketimli, çelişkili kapasite içeren, yinelenen veya örtüşen kayıtlar dışarıda tutulur. Süre 100 nanosaniyelik Windows biriminden saate, tüketim mWh’den Wh’ye çevrilir. Uyku ve prizde kullanım analize katılmaz. Windows’un pil değişti işaretinden önceki kayıtlar kullanılmaz.
+Yalnızca aktif ve prizden çıkarılmış dönemler değerlendirilir. Uyku/Connected Standby, prizli kullanım, geçersiz kapasite farkları, tekrarlar ve çakışmalar dışlanır. Bitişik kısa parçalar aykırı değer filtresinden önce birleştirilir. En az üç uygun oturum, 60 dakika ve iki gün gerekir. Ortanca/MAD filtresi sıra dışı oturumları ayırır; süre ağırlığı sınırlandırılır.
 
-Aykırı tüketimi belirlerken her oturum eşit oy kullanır: oturum medyanı ve medyan mutlak sapma hesaplanır. Böylece tek uzun, yüksek tüketimli oturum normal kullanım eşiğini belirleyemez. Sapma eşiği medyanın %60’ı ile mutlak sapmanın üç katından büyük olanıdır; ancak medyanın kendisini aşamaz. Tipik tüketimin iki katından yüksek oturumlar genel profile katılmaz. Filtrelenmiş oturumlardan ortalama alınırken süre ağırlığı en fazla 60 dakikadır. Elektrik kesintisi/oyun tespit edilmez; kullanıcıya göre sıra dışı tüketim ayrılır. Düzenli yüksek tüketim kullanıcının normaliyse otomatik olarak silinmez. En az 3 uygun oturum, toplam 60 dakika ve 2 farklı UTC gün gerekir. Yetersiz ya da okunamayan raporda canlı öğrenme devam eder. “Aykırı” sayısı yalnızca tüketim filtresinde ayrılan oturumları gösterir; uyku, prizde kullanım ve diğer geçersiz kayıtlar bu sayıya dahil değildir.
+Windows verisi başlangıç tahminidir. Yeterli canlı geçmiş oluşunca aynı dönemler ikinci kez ağırlıklandırılmaz. Yeniden analiz eski içe aktarımı değiştirir. Windows’un sakladığı ayrıntı değişebilir; 14 gün istemek 14 tam gün veri garantisi değildir. İçe aktarılan başlangıç tahmini 30 gün sonra eskir; **Pulse’un kendi arşivi 30 günde silinmez**.
 
-Geçmiş, ilk canlı ölçümler gelene kadar geniş bir süre aralığıyla ve “Windows geçmişine göre” etiketiyle kullanılır. Canlı öğrenme ilerledikçe genel kullanım hesabında tarihsel özete 30 dakikalık sabit ağırlık, canlı dakikalara kendi sayıları kadar ağırlık verilir. Aynı raporu yeniden analiz etmek örnekleri çoğaltmaz, özeti günceller. 30 günden eski analiz kullanılmaz. Sürekli yüksek yükte canlı kalan süre geçmişteki iyimser değere bağlı kalmaz.
+## Depolama ve kaynak kullanımı
 
-Windows raporu cihazın geçmişidir; aynı cihazdaki başka Windows oturumlarının pil kullanımını da içerebilir. Profil dosyası Windows kullanıcısına özeldir. Rapor geçmiş adaptör performansını veya ayrıntılı şarj eğrisini güvenilir biçimde ayırmadığından, şarj eğrisi yalnızca canlı ölçümlerden öğrenilir. Geçmişle başlamak doğruluk garantisi değildir; tahmin başarısı gerçek kullanımda ölçülmelidir.
+- Son 48 saatin ayrıntılı kayıtları bellekte tutulur ve günlük dosyalara eklenir. Dosyalar gün bazında temizlendiği için diskte biraz daha eski ham kayıtlar kısa süre kalabilir.
+- Normal kullanım, yüksek yük, şarj ve bekleme için günlük enerji/süre toplamları süresiz korunur: `profile-v1.xml.days\<pil kimliği özeti>\`.
+- Yalnızca değişen günlük özet ve küçük etkin model güvenli dosya değişimiyle yazılır. Bütün dakika geçmişi yeniden yazılmaz. Normalde iki dakikada bir ve çıkışta kaydedilir; ani kapanmada henüz kaydedilmemiş aralık kaybolabilir.
+- Yarım kalmış son kayıt satırı atlanır. Günlük toplamlar bağımsız olduğundan satırların yeniden okunması enerjiyi iki kez saymaz.
+- Eski v1 ortanca değerleri yaklaşık geçmiş olarak korunur; kaydedilmemiş ham enerji sonradan geri üretilemez.
+- Windows’un doğrudan pil arayüzü birimleri, pil kimliğini ve önbelleğe alınan bilgileri kontrol eder. Göreli birimli pillerde W/Wh uydurulmaz. Doğrudan okuma yoksa WMI/temel durum sınırlı yedektir. Benzersiz kimlik verilmezse cihaz yolu, pil etiketi ve tasarım kapasitesi temkinli kimlik ayrımı sağlar.
+- Pencere açıkken doğrudan okuma 1 saniye; tepside veya yedek okumada 5 saniyedir. Gizli pencerenin grafiği yeniden çizilmez. İzin verildiğinde bekleme okuması en sık dakikada birdir.
 
-### Canlı kalan süre
+Testte bir günlük özet yaklaşık 0,5 KB idi: bir pil için dosya içeriği yılda yaklaşık 0,2 MB, ayrıca yakın geçmiş ve model. Dosya sisteminin ayırdığı gerçek alan daha büyük olabilir. WPF/.NET belleği, exe boyutundan çok daha büyüktür. Kısa ölçümler ve sınırları [doğrulama notlarında](VALIDATION.md) bulunur.
 
-Son 7 ölçümün medyanı, yumuşatılmış bir ortalamayı besler. Kısa sıçramalar bastırılır; yüksek tüketim yaklaşık 20 saniye devam ederse tahmin yeni yüke uyum sağlamaya başlar. Böylece oyun devam ederken kalan süre gereğinden uzun tutulmaz. Şarj/deşarj değişiminde, geçersiz güç verisinde veya 20 saniyeden uzun ölçüm boşluğunda canlı hesap yeniden başlar. Öğrenilmiş genel profil korunur.
+## Tahminin sınırları
 
-Gösterilen süre aralığı yaklaşık bir kullanım payıdır; istatistiksel olarak kalibre edilmiş güven aralığı değildir. Normalde ±%10, değişken tüketimde ±%25, henüz öğrenilmemiş şarj eğrisinde ±%20 pay uygulanır ve sınırlar 5 dakikaya yuvarlanır. “Kullanım değişken” etiketi son ölçümlerin değişkenliğini belirtir.
+Aralık yaklaşık bir tahmindir; istatistiksel güven garantisi değildir. Başlangıçta geniştir, değişken kullanımda genişler; beş dakikalık kapasite değişimine karşı gözlenen tahmin hatalarıyla daha da genişleyebilir. Kapasite ve watt aynı donanım kaynağından gelir. Kullanım değişen pencereler sabit kullanım hata kalibrasyonundan dışlanır. Tam dolum/tam boşalma süreleriyle uçtan uca doğruluk henüz sahada kalibre edilmedi.
 
-Grafik ve “ort.” alanı ham ölçümleri gösterir; süre tahmini ayrı olarak yumuşatılır. Bu nedenle ort. W ile süre hesabı birebir aynı olmayabilir.
+Otomatik senaryolar ve gerçek pil okuması bir laptopta kontrol edildi. Gerçek kapak kapatma/açma, priz geçişleri, şarj sınırları, çok pilli donanım ve farklı marka laptoplarda saha testi gerekiyor. Bu sürüm betadır.
 
-### Genel kullanımda pil ömrü
+## Derleme ve kontroller
 
-Dakikalık medyanlar saklanır. En az 20 örnekten sonra tipik tüketim hesaplanır; genel medyanın etrafındaki aykırı düşük/yüksek dakika değerleri dışarıda tutulur. Eşik medyanın %60’ı ile medyan mutlak sapmanın üç katından büyük olanıdır. Genel kullanım süresi, mevcut tam dolum kapasitesinin bu tipik tüketime bölünmesidir; tamamlanmış pil boşaltma oturumlarının doğrudan ortalaması değildir.
+.NET Framework 4.8 bulunan Windows’ta `powershell -ExecutionPolicy Bypass -File .\build.ps1` çalıştırın. Derleme indirme yapmaz.
 
-Elektrik kesintisi veya oyun oynandığı kesin olarak tespit edilmez. Nadir yüksek tüketim ölçümleri istatistiksel olarak ayrılır. Kullanıcının çoğu kullanımı oyun ise bu zamanla normal kullanım profiline dönüşebilir; kişisel genel kullanımı temsil etmesi amaçlanır.
+Kontroller: `Pulse.exe --learning-test`, `--history-test`, `--standby-test`, `--self-test`, `--language-test`, `--powerwatch-test`. Her işlemin bitmesini bekleyip çıkış kodunu kontrol edin; sonuç dosyaları exe yanına yazılır. `--preview --lang=tr/en` örnek görüntüyü, `--preview --idle` %99 bekleme durumunu üretir. `--probe` yerel pil bilgilerini yazar; yayın paketine eklemeyin. `--smoke-test` 70 saniyelik ekran dışında/gizli pencere testi yapar; ayrı `smoke-work` profili kullanır, gerçek kullanıcı profiline dokunmaz.
 
-Son 30 gün içindeki en fazla 720 dakikalık örnek tutulur. Bu sınır uzun süre açık kullanımda son 12 saatlik geçerli pil ölçümüne karşılık gelir; 30 günlük eksiksiz günlük tutulmaz.
+Henüz lisans seçilmedi. Deponun herkese açık olması tek başına açık kaynak lisansı sağlamaz.
 
-### Şarj süresi
-
-Doluluk %10’luk 10 bölüme ayrılır; her bölümün dakika medyanlarından şarj gücü öğrenilir. Bölüm başına en az 3 dakika gözlem sonrası o bölümün hızı kullanılır. Kalan bölümlerin süreleri toplanır; böylece sona yaklaşırken gözlenen yavaşlama hesaba katılır. Mevcut güç önceki eğriyi ölçeklendirerek adaptör veya yük değişimine uyum sağlar. Görülmemiş bölümlerde mevcut güç kullanılır ve “Şarj eğrisi öğreniliyor” gösterilir. Eğri 30 gün güncellenmezse eski kabul edilir.
-
-Farklı adaptörler ayrı profillerde tutulmaz. Üreticinin %80 gibi özel şarj sınırları algılanmaz; hedef donanımın bildirdiği tam dolum kapasitesidir. Şarjın durduğu bildirildiğinde süre gösterilmez. Gerçek doğruluk farklı laptoplarda ve tam şarj döngülerinde ayrıca ölçülmelidir.
-
-## Hafiflik ve gizlilik
-
-Canlı öğrenme penceresi 24 örnek, grafik 60 örnek, kalıcı normal profil 720 dakika ve şarj eğrisi 10 bölümle sınırlıdır. Dosya en sık 2 dakikada bir, ayrıca çıkışta ve sıfırlamada yazılır. Ham, kesintisiz günlük tutulmaz. Dosya bozuksa boş profille başlanır; kayıt başarısızsa ekranda belirtilir ve öğrenme o oturumda devam eder.
-
-Uygulama başlangıca otomatik eklenmez, pil ayarlarını değiştirmez, süreç/adaptör/oyun isimleri toplamaz. Pencere konumu ve üstte tutma tercihi oturumlar arasında saklanmaz.
-
-## Donanım sınırları
-
-Sunulmayan veriler “—” gösterilir. Ayrıntılı ölçümler okunamazsa Windows temel pil durumu kullanılır. Pil sağlığı, tam dolum / tasarım kapasitesidir. Göreli kapasite birimi kullanan sürücüler doğrulanmamıştır. Birden çok pil zıt yönde çalışıyorsa güç ve süre gösterilmez.
-
-## Kaynak ve doğrulama
-
-Pulse.cs, Learning.cs, LearningTests.cs, Widget.xaml ve build.ps1 kaynak dosyalarıdır. build.ps1 Windows’un .NET Framework derleyicisiyle derler; harici paket gerektirmez.
-
-- `Pulse.exe --self-test`: temel süre hesapları.
-- `Pulse.exe --learning-test`: sıçrama, sürekli yük, uyku, geçersiz veri, aykırı genel kullanım, şarj yavaşlaması, adaptör/yük değişimi, profil kaydetme/yükleme, bozuk dosya, farklı aygıt, sıfırlama ve bellek sınırları.
-- `Pulse.exe --history-test`: geçmiş filtresi, süre/enerji birimleri, ilk tahmin, kalıcılık, tekrar analiz, pil değişimi ve güvenli XML okuma testleri.
-- `Pulse.exe --probe`: gerçek pil verisini probe.txt dosyasına yazar.
-- `Pulse.exe --preview`: örnek verilerle preview.png üretir; bu görsel gerçek ölçüm değildir.
-
-Testler sentetik senaryolardır; farklı donanımlarda saha doğruluğunun veya tüm uygulamanın CPU/RAM tüketiminin garantisi değildir. Öğrenme testindeki hız ölçümü yalnızca hesaplama döngüsüne aittir.
-
-Windows kaynakları: root/wmi BatteryStatus, BatteryFullChargedCapacity, BatteryStaticData ve GetSystemPowerStatus.
-
-- https://learn.microsoft.com/en-us/windows/win32/api/batclass/ns-batclass-battery_wmi_status
-- https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-battery
-
-- https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options#batteryreport
-
-
+Büyük Güncel Tüketim değeri beş saniyede bir, son beş saniyedeki okumaların ortalamasıyla yenilenir; arada sabit kalır. Başlangıçta ilk geçerli ölçümü gösterir. Küçük 1 dk ort. alanı son bir dakikadaki okumaların ortalamasıdır; ilk dakika dolana kadar mevcut okumalar kullanılır. Şarj gücünde de aynı gösterim uygulanır. Görünür pencerede doğrudan okuma ve öğrenme her saniye devam eder; grafik ham ölçümleri kullanır.

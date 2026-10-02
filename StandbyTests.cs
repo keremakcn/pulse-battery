@@ -23,9 +23,10 @@ namespace Pulse {
     gate.Suspend();Check(!gate.CanLearn,"suspend excludes learning");gate.Display(1);Check(!gate.CanLearn,"screen event cannot override suspend");
     gate.Resume();Check(gate.CanLearn,"resume with screen on permits learning");gate.Display(0);gate.Resume();Check(!gate.CanLearn,"automatic wake with screen off remains excluded");
     gate.Display(2);Check(gate.CanLearn,"dim is still active");gate.Available=false;Check(!gate.CanLearn,"failed notification registration must not learn");gate.Available=true;
+    before=gate.Revision;gate.PowerSource();Check(!gate.Accept(before)&&gate.SourceRevision==1,"power source event rejects pending reads even without a display transition");
     var l=new Learner(null);DateTime t=DateTime.UtcNow;var r=new Reading{Device="test",Full=80,Remaining=60,Percent=75,Rate=20,Discharging=true};
     for(int i=0;i<30;i++)l.Add(r,t.AddSeconds(i*5));
-    int normal=l.Data.Normal.Count;var rest=new RestRecord();rest.Begin(r,t,t);gate.Display(0);l.ResetLive();
+    int normal=l.Data.Normal.Count;var rest=new RestRecord();rest.Begin(r,t,t);gate.Display(0);l.ResetLive();normal=l.Data.Normal.Count;
     r.Rate=0.5;r.Remaining=58;
     for(int i=0;i<240;i++){int rev=gate.Revision;if(gate.Accept(rev))l.Add(r,t.AddMinutes(i));else rest.Observe(r);}
     Check(l.Data.Normal.Count==normal&&l.RecentCount==0,"four hours standby measurements never enter discharge model");
@@ -33,6 +34,7 @@ namespace Pulse {
     Check(l.Data.Charge.All(b=>b.Count==0),"standby charge readings never train charging bands");
     r.Charging=false;r.Discharging=true;rest.Finish(r,t.AddHours(4));Check(rest.LastLoss==2&&rest.LastMinutes==240,"standby loss kept separate");
     var noPoll=new RestRecord();r.Remaining=50;noPoll.Begin(r,t,t);r.Remaining=49;noPoll.Finish(r,t.AddHours(2));Check(noPoll.LastLoss==1,"before/after works without standby polling");
+    noPoll.Begin(r,t,t);noPoll.Invalidate();r.Remaining=48;noPoll.Finish(r,t.AddHours(2));Check(noPoll.LastLoss<0,"power source event invalidates unobserved standby charging");
     r.Remaining=50;rest.Begin(r,t,t);r.Online=true;rest.Observe(r);r.Online=false;r.Remaining=49;rest.Finish(r,t.AddHours(1));Check(rest.LastLoss<0,"observed AC invalidates drain estimate");
     rest.Begin(r,t.AddSeconds(-30),t);rest.Finish(r,t.AddHours(1));Check(rest.LastLoss<0,"stale baseline is not presented as accurate");
     rest.Begin(r,t,t);r.Device="other";rest.Finish(r,t.AddHours(1));Check(rest.LastLoss<0,"battery change invalidates rest loss");

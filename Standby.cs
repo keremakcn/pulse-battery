@@ -6,11 +6,12 @@ namespace Pulse {
  // Conservatively exclude screen-off time as well as explicit suspend.
  public class ActivityGate {
   public bool DisplayKnown, DisplayOn, Suspended, Available;
-  public int Revision;
+  public int Revision,SourceRevision;
   public bool CanLearn {get{return Available&&DisplayKnown&&DisplayOn&&!Suspended;}}
-  public void Display(int value){if(value<0||value>2)return;DisplayKnown=true;DisplayOn=value!=0;Revision++;}
+  public void Display(int value){if(value<0||value>2)return;bool next=value!=0;if(!DisplayKnown||DisplayOn!=next)Revision++;DisplayKnown=true;DisplayOn=next;}
   public void Suspend(){Suspended=true;Revision++;}
   public void Resume(){Suspended=false;Revision++;}
+  public void PowerSource(){SourceRevision++;Revision++;}
   public bool Accept(int requestRevision){return CanLearn&&requestRevision==Revision;}
  }
  public class RestRecord {
@@ -30,6 +31,7 @@ namespace Pulse {
    LastLoss=valid&&LastMinutes>=1?Math.Max(0,startCapacity-r.Remaining):-1;
   }
   public void Clear(){Pending=false;LastLoss=-1;LastMinutes=0;}
+  public void Invalidate(){valid=false;}
  }
  public sealed class PowerWatch:IDisposable {
   static readonly Guid DisplayGuid=new Guid("2B84C20E-AD23-4DDF-93DB-05FFBD7EFCA5");
@@ -49,6 +51,7 @@ namespace Pulse {
    int code=w.ToInt32();bool update=false;
    if(code==4){gate.Suspend();update=true;}
    else if(code==7||code==18){gate.Resume();update=true;}
+   else if(code==10){gate.PowerSource();update=true;}
    else if(code==0x8013&&data!=IntPtr.Zero&&Marshal.ReadInt32(data,16)>=4&&(Guid)Marshal.PtrToStructure(data,typeof(Guid))==DisplayGuid){gate.Display(Marshal.ReadInt32(data,20));update=true;}
    if(update)changed();return IntPtr.Zero;
   }

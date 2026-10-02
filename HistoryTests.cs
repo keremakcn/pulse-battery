@@ -10,7 +10,8 @@ namespace Pulse {
    return string.Format(CultureInfo.InvariantCulture,"<UsageEntry Timestamp='{0}' Duration='{1}' Discharge='{2}' FullChargeCapacity='80000' ChargeCapacity='80000' EntryType='{3}' Ac='{4}'/>",start.ToString("o"),min*TimeSpan.TicksPerMinute,watts*1000*min/60,type,ac);
   }
   public static int Run() {
-   string file=Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"history-test.xml"),profile=file+".profile";
+   string root=Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"history-test-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(root);
+   string file=Path.Combine(root,"report.xml"),profile=file+".profile";
    try {
     DateTime now=DateTime.UtcNow;string rows="";
     for(int i=1;i<=6;i++)rows+=Row(now.AddDays(-i),30,10,"Active","0");
@@ -54,9 +55,12 @@ namespace Pulse {
     File.WriteAllText(file,"<BatteryReport><RecentUsage>"+regularGaming+"</RecentUsage></BatteryReport>");
     var regular=BatteryHistory.Parse(file,now);
     Check(regular.Useful&&regular.Outliers==0&&regular.Watts==40,"consistently high normal usage is not erased by an absolute power threshold");
+    string fragments="";for(int day=1;day<=4;day++)for(int part=0;part<20;part++)fragments+=Row(now.AddDays(-day).AddMinutes(part),1,10,"Active","0");
+    File.WriteAllText(file,"<BatteryReport><RecentUsage>"+fragments+Row(now.AddDays(-5),30,48,"Active","0")+"</RecentUsage></BatteryReport>");
+    var fragmented=BatteryHistory.Parse(file,now);Check(fragmented.Useful&&fragmented.Included==4&&fragmented.Outliers==1&&Math.Abs(fragmented.Watts-10)<.001,"adjacent short fragments are combined before filtering");
     File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"history-test-result.txt"),"PASS: "+count+" history integration checks.");return 0;
    }catch(Exception e){File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"history-test-result.txt"),"FAIL: "+e);return 1;}
-   finally {if(File.Exists(file))File.Delete(file);if(File.Exists(profile))File.Delete(profile);}
+   finally {Directory.Delete(root,true);}
   }
  }
 }

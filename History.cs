@@ -37,7 +37,7 @@ namespace Pulse {
    foreach(XmlElement e in doc.SelectNodes("/*/*[local-name()='RecentUsage']/*[local-name()='UsageEntry']")) {
     DateTime start=Date(e.GetAttribute("Timestamp"));double ticks=Number(e,"Duration"),drop=Number(e,"Discharge"),full=Number(e,"FullChargeCapacity"),charge=Number(e,"ChargeCapacity");
     double minutes=ticks/TimeSpan.TicksPerMinute;
-    if(e.GetAttribute("Ac")!="0"||e.GetAttribute("EntryType")!="Active"||start<cutoff||start>now||minutes<5||minutes>720||drop<=0||full<=0||charge<=0||drop>charge*1.05||charge>full*1.05) {result.Excluded++;continue;}
+    if(e.GetAttribute("Ac")!="0"||e.GetAttribute("EntryType")!="Active"||start<cutoff||start>now||minutes<=0||minutes>720||drop<=0||full<=0||charge<=0||drop>charge*1.05||charge>full*1.05) {result.Excluded++;continue;}
     DateTime end=start.AddMinutes(minutes);
     double watts=drop/1000/(minutes/60);
     if(end>now.AddSeconds(5)||!Learner.Valid(watts)) {result.Excluded++;continue;}
@@ -46,6 +46,10 @@ namespace Pulse {
    // Do not double count duplicate or overlapping report rows.
    var clean=new List<Session>();DateTime previous=DateTime.MinValue;
    foreach(var s in list.OrderBy(s=>s.Start)) {if(s.Start<previous){result.Excluded++;continue;}clean.Add(s);previous=s.End;}
+   // Adjacent report fragments are one session, not extra votes in the outlier filter.
+   var joined=new List<Session>();
+   foreach(var s in clean){var p=joined.LastOrDefault();if(p!=null&&(s.Start-p.End).TotalSeconds<=1&&p.Minutes+s.Minutes<=720){p.Watts=(p.Watts*p.Minutes+s.Watts*s.Minutes)/(p.Minutes+s.Minutes);p.Minutes+=s.Minutes;p.End=s.End;}else joined.Add(s);}
+   result.Excluded+=joined.Count(s=>s.Minutes<5);clean=joined.Where(s=>s.Minutes>=5).ToList();
    if(clean.Count>=3) {
     double med=Median(clean,s=>s.Watts),mad=Median(clean,s=>Math.Abs(s.Watts-med));
     // A broad spread must not admit sessions above twice the typical rate.
@@ -73,4 +77,3 @@ namespace Pulse {
   }
  }
 }
-

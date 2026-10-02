@@ -1,11 +1,5 @@
 $ErrorActionPreference = 'Stop'
 $framework = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319'
 $refs = @('System.dll','System.Core.dll','System.Xml.dll','System.Management.dll','System.Drawing.dll','System.Windows.Forms.dll','System.Xaml.dll','WPF\WindowsBase.dll','WPF\PresentationCore.dll','WPF\PresentationFramework.dll') | ForEach-Object { '/reference:' + (Join-Path $framework $_) }
-& (Join-Path $framework 'csc.exe') /nologo /target:winexe /optimize+ /platform:anycpu ("/out:" + (Join-Path $PSScriptRoot 'Pulse.exe')) ("/resource:" + (Join-Path $PSScriptRoot 'Widget.xaml') + ',Widget.xaml') $refs (Join-Path $PSScriptRoot 'Pulse.cs') (Join-Path $PSScriptRoot 'AssemblyInfo.cs') (Join-Path $PSScriptRoot 'Localization.cs') (Join-Path $PSScriptRoot 'Standby.cs') (Join-Path $PSScriptRoot 'StandbyTests.cs') (Join-Path $PSScriptRoot 'Learning.cs') (Join-Path $PSScriptRoot 'LearningTests.cs') (Join-Path $PSScriptRoot 'History.cs') (Join-Path $PSScriptRoot 'HistoryTests.cs')
+& (Join-Path $framework 'csc.exe') /nologo /target:winexe /optimize+ /platform:anycpu ("/win32icon:" + (Join-Path $PSScriptRoot 'assets\Pulse.ico')) ("/resource:" + (Join-Path $PSScriptRoot 'assets\Pulse.ico') + ',Pulse.ico') ("/out:" + (Join-Path $PSScriptRoot 'Pulse.exe')) ("/resource:" + (Join-Path $PSScriptRoot 'Widget.xaml') + ',Widget.xaml') $refs (Join-Path $PSScriptRoot 'Pulse.cs') (Join-Path $PSScriptRoot 'AssemblyInfo.cs') (Join-Path $PSScriptRoot 'Localization.cs') (Join-Path $PSScriptRoot 'Standby.cs') (Join-Path $PSScriptRoot 'StandbyTests.cs') (Join-Path $PSScriptRoot 'Learning.cs') (Join-Path $PSScriptRoot 'LearningTests.cs') (Join-Path $PSScriptRoot 'History.cs') (Join-Path $PSScriptRoot 'HistoryTests.cs') (Join-Path $PSScriptRoot 'NativeBattery.cs') (Join-Path $PSScriptRoot 'V2Tests.cs')
 if ($LASTEXITCODE -ne 0) { throw 'Build failed / Derleme başarısız.' }
-
-
-
-
-
-

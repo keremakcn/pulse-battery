@@ -10,6 +10,18 @@ namespace Pulse {
   public static bool Turkish {get;private set;}
   public static CultureInfo Culture {get {return CultureInfo.GetCultureInfo(Turkish?"tr-TR":"en-US");}}
   static readonly Dictionary<string,string> English=new Dictionary<string,string> {
+   {"1 dk ort. ","1 min avg. "},
+   {"1 dk ort. — W","1 min avg. — W"},
+   {"5 saniyede bir yenilenir · son 5 saniyenin ortalaması","Updates every 5 seconds · average of the last 5 seconds"},
+   {"Son 1 dakikanın ortalaması · başlangıçta mevcut ölçümler kullanılır","Average over the last minute · available readings used during startup"},
+   {"Güncel Tüketim","Current Consumption"},
+   {"Güncel Şarj Gücü","Current Charging Power"},
+   {"Son 5 saniyenin ortalaması","Average over the last 5 seconds"},
+   {"Şarj tamamlandı","Charging complete"},
+   {"Prize bağlı · şarj edilmiyor","Plugged in · not charging"},
+   {"Şarj durumu doğrulanıyor","Checking charging status"},
+   {"●  Canlı · 1 sn aralıkla","●  Live · every second"},
+   {"Kapasite değişimine göre · yaklaşık süre","Capacity trend · approximate time"},
    {"Bekleme kaybını göster","Show standby battery loss"},
    {"Bekleme ölçümleri öğrenmeye dahil edilmez","Standby readings are excluded from learning"},
    {"Ekran kapalı / uyku · öğrenme duraklatıldı","Screen off / sleep · learning paused"},

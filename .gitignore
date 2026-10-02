@@ -2,9 +2,16 @@
 *.zip
 *-result.txt
 probe.txt
-profile*.xml
+profile*.xml*
 battery*.xml
 battery*.html
 history-test.xml*
 learning-test-work/
+v2-test-*/
+smoke-work/
+*.minutes
+*.profile
 *.tmp
+*.bak
+idle-*.png
+history-test-*/
